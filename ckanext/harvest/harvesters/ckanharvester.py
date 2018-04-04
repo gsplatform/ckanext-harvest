@@ -189,8 +189,18 @@ class CKANHarvester(HarvesterBase):
         org_filter_include = self.config.get('organizations_filter_include', [])
         org_filter_exclude = self.config.get('organizations_filter_exclude', [])
         if org_filter_include:
-            fq_terms.append(' OR '.join(
-                'organization:%s' % org_name for org_name in org_filter_include))
+            #fq_terms.append(' OR '.join(
+                #'organization:%s' % org_name for org_name in org_filter_include))
+            cnt = len(org_filter_include)
+            if (cnt == 1):
+                fq_terms.append('organization:%s' % org_filter_include[0])
+
+            else:
+                fq_terms.append('organization:(%s OR ' % org_filter_include[0])
+                org_filter_include.pop(0)
+                fq_terms.append(' OR '.join(org_filter_include))
+                fq_terms.append(')')
+
         elif org_filter_exclude:
             fq_terms.extend(
                 '-organization:%s' % org_name for org_name in org_filter_exclude)
